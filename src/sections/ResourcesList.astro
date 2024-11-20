@@ -1,0 +1,346 @@
+<section class="resources">
+	<div
+		class="resources__count"
+		id="resources-count">
+		<h3
+			class="resources__count__text"
+			id="resources-count-text">
+		</h3>
+	</div>
+	<div
+		id="resources-list"
+		class="resources__list">
+	</div>
+</section>
+
+<script>
+	import { BookmarkIcon } from '~/components/BookmarkIcon';
+	import { ResourceCard } from '~/components/ResourceCard';
+	import { resources, type Resource } from '~/data';
+	import { favsStore, filtersStore, NUM_RESOURCES_PER_PAGE } from '../store/index';
+
+	const resourcesCount = document.getElementById('resources-count');
+	const resourcesCountText = document.getElementById('resources-count-text');
+	const resourcesList = document.getElementById('resources-list');
+
+	let resourcesRendered: Resource[] = [];
+
+	filtersStore.subscribe(state => {
+		if (!resourcesList || !resourcesCount || !resourcesCountText) return;
+		const { categories, page, moreItems, searchValue } = state;
+
+		resourcesList.innerHTML = '';
+
+		/**
+		 * Resources filtered by categories
+		 */
+		let resourcesFiltered =
+			categories && categories.length > 0
+				? resources.filter(resource => {
+						return categories.some(cat => resource.categories.includes(cat));
+					})
+				: resources;
+
+		/**
+		 * Resources filtered by search
+		 */
+		if (searchValue) {
+			resourcesFiltered = resourcesFiltered.filter(resource => {
+				return resource.title.toLowerCase().includes(searchValue.toLowerCase());
+			});
+		}
+
+		const resourcesResult = resourcesFiltered.slice(page * NUM_RESOURCES_PER_PAGE, (page + 1) * NUM_RESOURCES_PER_PAGE);
+		resourcesRendered = resourcesResult;
+
+		/**
+		 * Toggle show pagination flag
+		 */
+		if (resourcesResult.length === 0 && filtersStore.value.showPagination) {
+			filtersStore.set({ ...filtersStore.value, showPagination: false });
+		}
+
+		/**
+		 * Resources results counter
+		 */
+		resourcesCount.classList.remove('resources__count--empty');
+		resourcesCountText.textContent = `${resourcesFiltered.length} results`;
+
+		/**
+		 * Render resources cards
+		 */
+		resourcesResult.forEach(resource => {
+			const resourceCard = ResourceCard(resource);
+			resourcesList.appendChild(resourceCard);
+		});
+
+		/**
+		 * No results found
+		 */
+		if (resourcesRendered.length === 0) {
+			resourcesCount.classList.add('resources__count--empty');
+			resourcesCountText.textContent = `
+				No results found
+			`;
+		}
+
+		/**
+		 * More items state
+		 */
+		const nextMoreItems = !(page === Math.ceil(resourcesFiltered.length / NUM_RESOURCES_PER_PAGE) - 1);
+		if (nextMoreItems !== moreItems) {
+			filtersStore.set({ ...filtersStore.get(), moreItems: nextMoreItems });
+		}
+	});
+
+	favsStore.subscribe(favIds => {
+		if (resourcesRendered.length === 0) return;
+
+		resourcesRendered.forEach(resource => {
+			const isBookmarked = favIds.includes(resource.id);
+			const bookmarkBtn = document.getElementById(`bookmark-btn-${resource.id}`);
+
+			/**
+			 * Update bookmark icon
+			 */
+			if (!bookmarkBtn) return;
+			const bookmarkIcon = BookmarkIcon(resource.id);
+			bookmarkBtn.innerHTML = bookmarkIcon;
+
+			/**
+			 * Bookmark button event
+			 */
+			bookmarkBtn?.addEventListener('click', () => {
+				if (isBookmarked) {
+					favsStore.set(favIds.filter(id => id !== resource.id));
+				} else {
+					favsStore.set([...favIds, resource.id]);
+				}
+			});
+		});
+	});
+</script>
+
+<style lang="scss" is:global>
+	:root {
+		--card-height: 300px;
+		--card-height-large: 350px;
+	}
+
+	.resources {
+		width: 100%;
+		margin-top: -30px;
+		position: relative;
+
+		&__count {
+			margin-left: 3rem;
+
+			&__text {
+				font-weight: 100;
+				font-size: var(--font-md);
+			}
+
+			&--empty {
+				height: 50dvh;
+				width: 100%;
+				display: grid;
+				place-items: center;
+				margin-left: -1.5rem;
+			}
+
+			&--empty &__text {
+				margin-left: 0;
+				margin-top: -2rem;
+			}
+		}
+
+		&__list {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(20vw, 1fr));
+			width: 100%;
+			box-sizing: border-box;
+			padding: 0 3rem;
+			gap: 1.5rem;
+
+			.card {
+				height: 200px;
+				position: relative;
+				background-color: var(--dark-200);
+
+				padding: 0 1rem;
+				border: 1px solid var(--dark-300);
+
+				text-decoration: none;
+				box-shadow:
+					0 4px 6px -1px rgb(0 0 0 / 0.1),
+					0 2px 4px -2px rgb(0 0 0 / 0.1);
+
+				&__bookmark-btn {
+					position: absolute;
+					top: 1rem;
+					right: 1rem;
+					padding: 0.3rem;
+					display: grid;
+					place-items: center;
+					border: none;
+					background-color: transparent;
+					color: var(--light-200);
+					cursor: pointer;
+					z-index: 10;
+					transition: all 0.2s ease;
+				}
+
+				&__content:focus {
+					outline: 3px solid var(--accent-blue);
+				}
+
+				&__content {
+					display: flex;
+					flex-direction: column;
+					color: var(--light-300);
+					height: 100%;
+					border-left: 1px solid var(--dark-300);
+					border-right: 1px solid var(--dark-300);
+
+					&__section {
+						position: absolute;
+						left: 0;
+						box-sizing: border-box;
+						padding-left: 2rem;
+						width: 100%;
+						border-bottom: 1px solid var(--dark-300);
+					}
+
+					&__section--title {
+						display: flex;
+						align-items: center;
+						gap: 0.5rem;
+						top: 1rem;
+						border-top: 1px solid var(--dark-300);
+
+						&__favicon {
+							width: 1.5rem;
+						}
+
+						&__text {
+							font-size: var(--font-3xl);
+							font-style: italic;
+							line-height: 0;
+						}
+					}
+
+					&__section--category {
+						top: 6rem;
+						border-bottom: 1px solid var(--dark-300);
+
+						&__text {
+							font-size: var(--font-sm);
+							font-weight: 200;
+							line-height: 0;
+							margin-bottom: 0.5rem;
+						}
+					}
+
+					&__section--description {
+						bottom: 1rem;
+						padding-right: 1rem;
+						border-top: 1px solid var(--dark-300);
+						display: flex;
+						align-items: start;
+						justify-content: space-between;
+						height: 5rem;
+
+						&__text {
+							font-size: var(--font-xs);
+							font-weight: 200;
+							width: 90%;
+							text-wrap: pretty;
+						}
+
+						span {
+							width: 2rem;
+							height: 100%;
+							transition: all 0.2s ease-in-out;
+						}
+					}
+				}
+
+				&__content:hover .resource-description span {
+					background-color: var(--dark-500);
+				}
+			}
+
+			.card:nth-child(odd) {
+				height: var(--card-height);
+			}
+
+			.card:nth-child(even) {
+				height: var(--card-height-large);
+			}
+
+			.card:nth-child(5),
+			.card:nth-child(7) {
+				margin-top: -50px;
+				height: var(--card-height-large);
+			}
+
+			.card:nth-child(6),
+			.card:nth-child(8) {
+				height: var(--card-height);
+			}
+		}
+	}
+
+	.resources::before {
+		content: '';
+		position: absolute;
+		top: -0.5rem;
+		left: 0;
+		width: 100%;
+		height: 200px;
+		background-color: var(--light-200);
+		z-index: -1;
+	}
+
+	@media (max-width: 1100px) {
+		.resources {
+			&__count {
+				margin-left: 1rem;
+				margin-top: 2rem;
+			}
+
+			&__list {
+				grid-template-columns: repeat(auto-fill, minmax(25vw, 1fr));
+				padding: 1rem;
+
+				.card {
+					height: var(--card-height) !important;
+					margin-top: 0 !important;
+				}
+			}
+		}
+	}
+
+	@media (max-width: 750px) {
+		.resources {
+			&__count {
+				&__title {
+					font-size: var(--font-sm);
+				}
+			}
+
+			&__list {
+				grid-template-columns: repeat(auto-fill, minmax(40vw, 1fr));
+				gap: 1rem;
+			}
+		}
+	}
+
+	@media (max-width: 500px) {
+		.resources {
+			&__list {
+				grid-template-columns: repeat(auto-fill, minmax(90vw, 1fr));
+			}
+		}
+	}
+</style>

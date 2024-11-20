@@ -1,0 +1,42 @@
+---
+import Bookmarks from './Bookmarks.astro';
+---
+
+<header>
+	<h1>Resources</h1>
+	<Bookmarks />
+</header>
+
+<style scoped>
+	header {
+		position: sticky;
+		top: 0;
+		z-index: 100;
+		display: flex;
+		align-items: center;
+		background-color: var(--dark-100);
+		padding-left: 3rem;
+		padding-right: 3rem;
+		height: 4rem;
+		box-sizing: border-box;
+		border-bottom: 1px solid var(--dark-200);
+
+		h1 {
+			font-size: var(--font-4xl);
+			margin-right: auto;
+			line-height: 0;
+			color: var(--light-100);
+		}
+
+		a {
+			color: var(--light-100);
+		}
+	}
+
+	@media (max-width: 750px) {
+		header {
+			padding-left: 1rem;
+			padding-right: 1rem;
+		}
+	}
+</style>

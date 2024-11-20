@@ -1,0 +1,31 @@
+---
+interface Props {
+	title: string;
+	description: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<section class="hero">
+	<h2 class="hero__title">{title}</h2>
+	<p class="hero__description">{description}</p>
+</section>
+
+<style lang="scss" scoped>
+	.hero {
+		padding: 2rem 3rem;
+
+		background-color: var(--dark-100);
+		color: var(--light-100);
+
+		&__title {
+			line-height: 0;
+			font-size: var(--font-3xl);
+		}
+
+		&__description {
+			font-size: var(--font-md);
+		}
+	}
+</style>

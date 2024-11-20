@@ -1,0 +1,102 @@
+---
+import ArrowLeft from '~/icons/arrow-left.astro';
+import ArrowRight from '~/icons/arrow-right.astro';
+---
+
+<div class="pagination">
+	<button
+		class="pagination__btn"
+		id="previous-btn">
+		<span class="pagination__btn__icon"><ArrowLeft /></span>
+		Previous
+	</button>
+	<button
+		class="pagination__btn"
+		id="next-btn">
+		Next
+		<span class="pagination__btn__icon"><ArrowRight /></span>
+	</button>
+</div>
+
+<script>
+	import { filtersStore } from '../store/index';
+
+	let currentPage = 0;
+
+	const previousBtn = document.getElementById('previous-btn');
+	const nextBtn = document.getElementById('next-btn');
+
+	filtersStore.subscribe(state => {
+		const { page, moreItems, showPagination } = state;
+
+		currentPage = page;
+
+		if (!showPagination) {
+			previousBtn?.setAttribute('disabled', 'true');
+			nextBtn?.setAttribute('disabled', 'true');
+			return;
+		}
+
+		if (currentPage === 0) {
+			previousBtn?.setAttribute('disabled', 'true');
+		} else {
+			previousBtn?.removeAttribute('disabled');
+		}
+
+		if (!moreItems) {
+			nextBtn?.setAttribute('disabled', 'true');
+		} else {
+			nextBtn?.removeAttribute('disabled');
+		}
+	});
+
+	previousBtn?.addEventListener('click', () => {
+		const previousPage = currentPage - 1;
+		filtersStore.set({
+			...filtersStore.get(),
+			page: previousPage,
+		});
+	});
+
+	nextBtn?.addEventListener('click', () => {
+		const nextPage = currentPage + 1;
+		filtersStore.set({ ...filtersStore.get(), page: nextPage });
+	});
+</script>
+
+<style lang="scss" scoped>
+	.pagination {
+		width: 100%;
+		box-sizing: border-box;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 3rem;
+
+		&__btn {
+			display: flex;
+			align-items: center;
+			gap: 1rem;
+			padding: 0.3rem 1rem;
+			background-color: var(--light-100);
+			border: 1px solid var(--light-400);
+
+			transition: all 0.2s ease-in-out;
+
+			&__icon {
+				display: grid;
+				place-items: center;
+				width: 1rem;
+			}
+		}
+
+		&__btn:not(:disabled) {
+			cursor: pointer;
+		}
+
+		&__btn:not(:disabled):hover {
+			background-color: var(--accent-blue);
+			color: var(--light-100);
+		}
+	}
+</style>

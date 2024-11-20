@@ -1,0 +1,16 @@
+---
+import Filters from '~/sections/Filters.astro';
+import ResourcesList from '~/sections/ResourcesList.astro';
+import ResourcesPagination from '~/sections/ResourcesPagination.astro';
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Welcome to Astro.">
+	<main>
+		<Filters />
+		<ResourcesList client:load />
+		<ResourcesPagination client:visible />
+	</main>
+
+	<style></style>
+</Layout>

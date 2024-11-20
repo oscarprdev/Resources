@@ -1,0 +1,304 @@
+---
+import Chevron from '~/icons/chevron.astro';
+import Search from '~/icons/search.astro';
+---
+
+<section class="filters">
+	<div class="filters__triggers">
+		<label class="filters__triggers__item">
+			<span class="filters__triggers__item__title">Filters</span>
+			<button
+				class="filters__triggers__item__btn"
+				popovertarget="filters"
+				id="filters-btn">
+				Filters
+				<span class="filters__triggers__item__btn__icon--chevron">
+					<Chevron />
+				</span>
+			</button>
+		</label>
+		<label class="filters__triggers__item">
+			<span class="filters__triggers__item__title">Search</span>
+			<input
+				class="filters__triggers__item__input"
+				id="search-input"
+				placeholder="Search your resource"
+				type="text"
+			/>
+			<span class="filters__triggers__item__icon--search">
+				<Search />
+			</span>
+		</label>
+	</div>
+
+	<div
+		id="filters"
+		class="filters__popover"
+		popover>
+		<label class="filters__popover__item">
+			<input
+				class="filters__popover__item__input"
+				type="checkbox"
+				id="filter-input"
+				name="frontend"
+			/>
+			<span class="filters__popover__item__text">Frontend</span>
+		</label>
+		<label class="filters__popover__item">
+			<input
+				class="filters__popover__item__input"
+				type="checkbox"
+				id="filter-input"
+				name="backend"
+			/>
+			<span class="filters__popover__item__text">Backend</span>
+		</label>
+		<label class="filters__popover__item">
+			<input
+				class="filters__popover__item__input"
+				type="checkbox"
+				id="filter-input"
+				name="framework"
+			/>
+			<span class="filters__popover__item__text">Framework</span>
+		</label>
+		<label class="filters__popover__item">
+			<input
+				class="filters__popover__item__input"
+				type="checkbox"
+				id="filter-input"
+				name="ui library"
+			/>
+			<span class="filters__popover__item__text">UI library</span>
+		</label>
+	</div>
+</section>
+
+<script>
+	import { ResourceCategory } from '~/data';
+	import { filtersStore } from '../store/index.ts';
+	import { debounce } from '../utils/debounce.ts';
+
+	const filtersPopover = document.getElementById('filters');
+	const filtersBtn = document.getElementById('filters-btn');
+	const searchInput = document.getElementById('search-input');
+
+	const filterInputs = document.querySelectorAll('#filter-input');
+	const btnContent = filtersBtn?.querySelector('span');
+
+	const categories = {
+		[ResourceCategory.Frontend]: false,
+		[ResourceCategory.Backend]: false,
+		[ResourceCategory.Framework]: false,
+		[ResourceCategory.UiLibrary]: false,
+	};
+
+	/**
+	 * Select category filter
+	 */
+	filterInputs.forEach(filterInput => {
+		filterInput.addEventListener('change', e => {
+			if (!btnContent) return;
+
+			const target = e.target as HTMLInputElement;
+			const name = target.name;
+			const checked = target.checked;
+
+			categories[name as keyof typeof categories] = checked;
+
+			const categoriesFiltered = Object.keys(categories).filter(
+				key => categories[key as keyof typeof categories]
+			) as ResourceCategory[];
+
+			if (categoriesFiltered.length === 0) {
+				btnContent.innerHTML = 'Filters';
+			} else {
+				btnContent.innerHTML = categoriesFiltered.join(', ');
+			}
+
+			filtersStore.set({
+				...filtersStore.get(),
+				categories: categoriesFiltered,
+			});
+		});
+	});
+
+	/**
+	 * Toggle filter popover state
+	 */
+	filtersPopover?.addEventListener('toggle', e => {
+		if (!('newState' in e)) return;
+
+		const state = e.newState;
+		if (state === 'open') {
+			filtersBtn?.setAttribute('aria-expanded', 'true');
+		} else {
+			filtersBtn?.setAttribute('aria-expanded', 'false');
+		}
+	});
+
+	/**
+	 * Search input event
+	 */
+	searchInput?.addEventListener(
+		'input',
+		debounce((e: Event) => {
+			const target = e.target as HTMLInputElement;
+			filtersStore.set({
+				...filtersStore.get(),
+				searchValue: target.value,
+			});
+		}, 300)
+	);
+</script>
+
+<style lang="scss" scoped>
+	.filters {
+		padding: 2rem 3rem;
+		background-color: var(--light-200);
+		color: var(--dark-100);
+
+		&__triggers {
+			display: flex;
+			align-items: start;
+			gap: 0.5rem;
+
+			&__item {
+				position: relative;
+				display: flex;
+				align-items: start;
+				flex-direction: column;
+				gap: 0.5rem;
+				width: 100%;
+				max-width: var(--popover-width);
+
+				&__title {
+					font-size: var(--font-xs);
+					color: var(--dark-200);
+				}
+
+				&__input,
+				&__btn {
+					position: relative;
+					width: 100%;
+					background-color: var(--light-100);
+					border: 1px solid var(--light-400);
+					box-sizing: border-box;
+					transition: all 0.3s ease;
+					height: 2.5rem;
+				}
+
+				&__input {
+					padding: 0 2rem;
+				}
+
+				&__input:focus {
+					outline-color: var(--dark-300);
+				}
+
+				&__btn {
+					display: flex;
+					align-items: center;
+					justify-content: space-between;
+					padding: 0 1rem;
+					cursor: pointer;
+					font-size: var(--font-sm);
+
+					&__icon--chevron {
+						transform: rotate(180deg);
+						width: 1rem;
+						margin-left: auto;
+						transition: all 0.2s ease;
+					}
+				}
+
+				&__btn:focus {
+					outline-color: var(--dark-300);
+				}
+
+				&__btn::before {
+					content: '';
+					bottom: 0;
+					position: absolute;
+					display: flex;
+					width: 100%;
+					height: 2px;
+					background-color: var(--accent-blue);
+					opacity: 0;
+					left: 0;
+					transition: all 0.2s ease;
+				}
+
+				&__btn[aria-expanded='true']::before {
+					opacity: 1;
+				}
+
+				&__btn[aria-expanded='true'] &__btn__icon--chevron {
+					transform: rotate(0deg);
+				}
+
+				&__icon {
+					&--search {
+						position: absolute;
+						left: 0.65rem;
+						bottom: 0.3rem;
+						width: 1rem;
+						color: var(--dark-400);
+					}
+				}
+			}
+		}
+
+		.filters__popover {
+			display: flex;
+			flex-direction: column;
+			padding: 0.5rem;
+
+			label {
+				display: flex;
+				align-items: center;
+				gap: 0.3rem;
+				padding: 0.5rem;
+				border-bottom: 1px solid var(--light-500);
+				cursor: pointer;
+				transition: all 0.2s ease;
+
+				span {
+					font-size: var(--font-xs);
+				}
+			}
+
+			label:hover {
+				color: var(--dark-400);
+			}
+
+			label:last-of-type {
+				border-bottom: none;
+			}
+		}
+	}
+
+	@media (max-width: 1100px) {
+		.filters {
+			padding: 1rem;
+		}
+	}
+
+	@media (max-width: 750px) {
+		.filters {
+			&__triggers {
+				flex-direction: column-reverse;
+			}
+		}
+	}
+
+	@media (max-width: 450px) {
+		.filters {
+			&__triggers {
+				&__item {
+					--popover-width: calc(100vw - 2rem);
+				}
+			}
+		}
+	}
+</style>

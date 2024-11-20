@@ -1,0 +1,359 @@
+<div class="bookmarks">
+	<button
+		id="bookmarks-trigger"
+		class="bookmarks__trigger"
+		>Bookmarks</button
+	>
+	<aside
+		aria-expanded="false"
+		id="bookmarks-aside"
+		class="bookmarks__aside">
+		<div
+			id="bookmarks-container"
+			class="bookmarks__aside__content">
+		</div>
+	</aside>
+</div>
+
+<script>
+	import { BookmarkItem } from '~/components/BookmarkItem.ts';
+	import { resources, type Resource } from '~/data';
+	import { favsStore } from '../store/index.ts';
+
+	const bookmarksTrigger = document.getElementById('bookmarks-trigger');
+	const bookmarksAside = document.getElementById('bookmarks-aside');
+	const bookmarksContainer = document.getElementById('bookmarks-container');
+	const bookmarksList = document.getElementById('bookmarks-container');
+
+	/**
+	 * Toggles the bookmarks aside
+	 */
+	bookmarksTrigger?.addEventListener('click', () => {
+		const isExpanded = bookmarksAside?.getAttribute('aria-expanded') === 'true';
+
+		if (isExpanded) {
+			bookmarksAside?.setAttribute('aria-expanded', 'false');
+		} else {
+			bookmarksAside?.setAttribute('aria-expanded', 'true');
+		}
+
+		bookmarksTrigger.classList.toggle('bookmarks__trigger--expanded');
+	});
+
+	/**
+	 * Closes the bookmarks aside when clicking outside of it
+	 */
+	bookmarksAside?.addEventListener('click', e => {
+		const target = e.target;
+		if (target instanceof HTMLElement) {
+			if (target.id === 'bookmarks-aside') {
+				bookmarksAside?.setAttribute('aria-expanded', 'false');
+			}
+		}
+	});
+
+	/**
+	 * BookmarkAsideHeader
+	 * @param {Resource[]} resourcesBookmarked
+	 */
+	const BookmarkAsideHeader = (resourcesBookmarked: Resource[]) => {
+		const bookmarksHeader = document.createElement('header');
+		const bookmarksCount = document.createElement('h3');
+		const bookmarksClearBnt = document.createElement('button');
+
+		bookmarksHeader.classList.add('bookmarks__aside__content__header');
+		bookmarksCount.classList.add('bookmarks__aside__content__header__count');
+		bookmarksClearBnt.classList.add('bookmarks__aside__content__header__clear');
+		bookmarksClearBnt.innerHTML = 'Clear all';
+
+		bookmarksClearBnt.addEventListener('click', () => {
+			favsStore.set([]);
+		});
+
+		bookmarksCount.innerHTML = `${resourcesBookmarked.length} bookmark${resourcesBookmarked.length > 1 ? 's' : ''}`;
+
+		bookmarksHeader.appendChild(bookmarksCount);
+		bookmarksHeader.appendChild(bookmarksClearBnt);
+
+		return bookmarksHeader;
+	};
+
+	/**
+	 * Updates the bookmarks list when the favsStore changes
+	 */
+	favsStore.subscribe(favIds => {
+		if (!bookmarksTrigger || !bookmarksList || !bookmarksContainer) return;
+
+		/**
+		 * Bookmarks counter
+		 */
+		bookmarksTrigger.textContent = `Bookmarks${favIds.length > 0 ? ` (${favIds.length})` : ''}`;
+
+		const resourcesBookmarked = resources.filter(resource => favIds.includes(resource.id));
+		bookmarksContainer.innerHTML = '';
+
+		if (resourcesBookmarked.length > 0) {
+			const bookmarkAsideHeader = BookmarkAsideHeader(resourcesBookmarked);
+			bookmarksContainer.appendChild(bookmarkAsideHeader);
+
+			const bookmarksList = document.createElement('ul');
+			bookmarksList.classList.add('bookmarks__aside__content__list');
+
+			/*
+			 * BookmarkItems
+			 */
+			resourcesBookmarked.forEach(resource => {
+				const bookmarkListItem = BookmarkItem(resource);
+
+				bookmarksList.appendChild(bookmarkListItem);
+			});
+
+			bookmarksContainer.appendChild(bookmarksList);
+
+			/**
+			 * DeleteBookmarkBtn
+			 */
+			resourcesBookmarked.forEach(resource => {
+				const deleteBookmarkBtn = document.getElementById(`remove-bookmark-${resource.id}`);
+
+				deleteBookmarkBtn?.addEventListener('click', () => {
+					favsStore.set(favIds.filter(id => id !== resource.id));
+				});
+			});
+		} else {
+			/**
+			 * EmptyText when no bookmarks
+			 */
+			const emptyText = document.createElement('h4');
+			emptyText.setAttribute('id', 'test');
+			emptyText.textContent = 'No bookmarks found';
+			emptyText.classList.add('bookmarks__aside__content--empty');
+			bookmarksList.appendChild(emptyText);
+		}
+	});
+</script>
+
+<style lang="scss" is:global>
+	.bookmarks {
+		&__trigger {
+			border: none;
+			background-color: transparent;
+			color: var(--light-100);
+			cursor: pointer;
+			font-size: var(--font-sm);
+			transition: all 0.2s ease;
+
+			&--expanded {
+				color: var(--accent-blue-light);
+			}
+		}
+
+		&__trigger:hover {
+			color: var(--accent-blue-light);
+		}
+
+		&__aside {
+			position: absolute;
+			top: 4rem;
+			right: 0;
+			width: 100vw;
+			height: 100vh;
+			z-index: 100;
+			transition: opacity 0.3s ease;
+			pointer-events: none;
+			opacity: 0;
+			background-color: rgba(0, 0, 0, 0.5);
+			backdrop-filter: blur(2px);
+
+			&__content {
+				position: relative;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				position: absolute;
+				overflow-y: scroll;
+				z-index: 1000;
+				top: 0;
+				right: -30rem;
+				padding: 1rem;
+				margin-left: auto;
+				background-color: var(--light-200);
+				width: 100vw;
+				max-width: 30rem;
+				height: 100vh;
+				box-sizing: border-box;
+				transition: all 0.3s ease;
+
+				&--empty {
+					margin-top: 1rem;
+					font-size: var(--font-sm);
+					color: var(--dark-300);
+				}
+
+				&__header {
+					box-sizing: border-box;
+					width: 100%;
+					display: flex;
+					align-items: center;
+					justify-content: space-between;
+
+					&__count {
+						margin-right: auto;
+						font-size: var(--font-sm);
+					}
+
+					&__clear {
+						cursor: pointer;
+						border: none;
+						padding: 0 1rem 0 3rem;
+						background-color: transparent;
+						font-size: var(--font-sm);
+						color: var(--dark-300);
+						transition: all 0.2s ease;
+					}
+
+					&__clear:hover {
+						color: var(--accent-blue);
+					}
+				}
+
+				&__list {
+					display: flex;
+					flex-direction: column;
+					gap: 0.2rem;
+					list-style: none;
+					padding: 0;
+					margin: 0;
+					width: 100%;
+
+					.bookmarks__item {
+						position: relative;
+						background-color: var(--dark-200);
+						border-top: 1px solid var(--dark-400);
+						border-bottom: 1px solid var(--dark-400);
+						box-sizing: border-box;
+						display: grid;
+						place-items: center;
+						transition: all 0.2s ease;
+						box-shadow:
+							0 4px 6px -1px rgb(0 0 0 / 0.1),
+							0 2px 4px -2px rgb(0 0 0 / 0.1);
+
+						&__remove-btn {
+							position: absolute;
+							top: 0rem;
+							right: 0rem;
+							height: 2rem;
+							width: 2rem;
+							border: 1px solid var(--dark-300);
+							border-top: 0;
+							background-color: transparent;
+							color: var(--light-300);
+							cursor: pointer;
+							z-index: 1000;
+							font-size: var(--font-lg);
+							font-weight: 100;
+							transition: all 0.3s ease;
+							line-height: 0.5;
+							box-sizing: border-box;
+
+							div {
+								transform: rotate(0);
+								transition: all 0.3s ease;
+							}
+						}
+
+						&__remove-btn:hover {
+							border: 1px solid var(--dark-500);
+							border-top: 0;
+						}
+
+						&__remove-btn:hover div {
+							transform: rotate(180deg);
+						}
+
+						&__link {
+							position: relative;
+							text-decoration: none;
+							color: var(--dark-100);
+							width: 100%;
+							height: 4rem;
+							box-sizing: border-box;
+
+							&__title {
+								display: flex;
+								align-items: center;
+								width: 100%;
+								height: 3rem;
+								padding-left: 1.5rem;
+								padding-top: 1rem;
+								box-sizing: border-box;
+								border-bottom: 1px solid var(--dark-300);
+								gap: 0.5rem;
+
+								&--favicon {
+									width: 1rem;
+									object-fit: cover;
+								}
+
+								&--text {
+									font-size: var(--font-md);
+									font-style: italic;
+									color: var(--light-100);
+									line-height: 0;
+								}
+
+								&--categories {
+									color: var(--light-100);
+									font-weight: 100;
+									font-size: var(--font-xs);
+									margin-bottom: 0.2rem;
+									margin-left: 1rem;
+								}
+							}
+
+							&__decorator {
+								position: absolute;
+								display: flex;
+								box-sizing: border-box;
+								top: 0;
+								left: 0;
+								width: 1rem;
+								height: 100%;
+								border-right: 1px solid var(--dark-300);
+								border-left: 1px solid var(--dark-400);
+
+								&--square {
+									width: 1rem;
+									height: 1rem;
+									margin-top: auto;
+								}
+							}
+						}
+					}
+
+					.bookmarks__item:nth-child(even) {
+						border: none;
+					}
+
+					.bookmarks__item:last-of-type {
+						border-bottom: 1px solid var(--dark-400);
+					}
+
+					.bookmarks__item:hover {
+						background-color: var(--dark-100);
+					}
+				}
+			}
+		}
+
+		&__aside[aria-expanded='true'] {
+			opacity: 1;
+			pointer-events: painted;
+		}
+
+		&__aside[aria-expanded='true'] &__aside__content {
+			right: 0;
+		}
+	}
+</style>
