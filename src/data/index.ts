@@ -13,6 +13,7 @@ export enum ResourceCategory {
 	Backend = 'backend',
 	Framework = 'framework',
 	UiLibrary = 'ui library',
+	IconsLibrary = 'icons library',
 }
 
 export const resources: Resource[] = [
@@ -89,5 +90,14 @@ export const resources: Resource[] = [
 		categories: [ResourceCategory.Frontend, ResourceCategory.Framework],
 		color: '#0CA5E9',
 		favicon: 'https://tailwindcss.com/favicons/favicon-32x32.png?v=3',
+	},
+	{
+		id: 'lucide',
+		title: 'Lucide',
+		description: 'Beautiful & consistent icons made by the community.',
+		url: 'https://lucide.dev/',
+		categories: [ResourceCategory.Frontend, ResourceCategory.IconsLibrary],
+		color: '#FF7070',
+		favicon: 'https://lucide.dev/favicon.ico',
 	},
 ];

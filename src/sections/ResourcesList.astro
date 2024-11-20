@@ -37,7 +37,7 @@
 		let resourcesFiltered =
 			categories && categories.length > 0
 				? resources.filter(resource => {
-						return categories.some(cat => resource.categories.includes(cat));
+						return categories.every(cat => resource.categories.includes(cat));
 					})
 				: resources;
 
@@ -54,13 +54,6 @@
 		resourcesRendered = resourcesResult;
 
 		/**
-		 * Toggle show pagination flag
-		 */
-		if (resourcesResult.length === 0 && filtersStore.value.showPagination) {
-			filtersStore.set({ ...filtersStore.value, showPagination: false });
-		}
-
-		/**
 		 * Resources results counter
 		 */
 		resourcesCount.classList.remove('resources__count--empty');
@@ -72,6 +65,21 @@
 		resourcesResult.forEach(resource => {
 			const resourceCard = ResourceCard(resource);
 			resourcesList.appendChild(resourceCard);
+
+			/**
+			 * Bookmark button event
+			 */
+			const bookmarkBtn = document.getElementById(`bookmark-btn-${resource.id}`);
+
+			bookmarkBtn?.addEventListener('click', () => {
+				const isBookmarked = favsStore.get().includes(resource.id);
+
+				if (isBookmarked) {
+					favsStore.set(favsStore.get().filter(id => id !== resource.id));
+				} else {
+					favsStore.set([...favsStore.get(), resource.id]);
+				}
+			});
 		});
 
 		/**
@@ -87,36 +95,24 @@
 		/**
 		 * More items state
 		 */
-		const nextMoreItems = !(page === Math.ceil(resourcesFiltered.length / NUM_RESOURCES_PER_PAGE) - 1);
+		const nextMoreItems = resourcesFiltered.length > NUM_RESOURCES_PER_PAGE * (page + 1);
 		if (nextMoreItems !== moreItems) {
 			filtersStore.set({ ...filtersStore.get(), moreItems: nextMoreItems });
 		}
 	});
 
-	favsStore.subscribe(favIds => {
+	favsStore.subscribe(() => {
 		if (resourcesRendered.length === 0) return;
 
 		resourcesRendered.forEach(resource => {
-			const isBookmarked = favIds.includes(resource.id);
 			const bookmarkBtn = document.getElementById(`bookmark-btn-${resource.id}`);
+			if (!bookmarkBtn) return;
 
 			/**
 			 * Update bookmark icon
 			 */
-			if (!bookmarkBtn) return;
 			const bookmarkIcon = BookmarkIcon(resource.id);
 			bookmarkBtn.innerHTML = bookmarkIcon;
-
-			/**
-			 * Bookmark button event
-			 */
-			bookmarkBtn?.addEventListener('click', () => {
-				if (isBookmarked) {
-					favsStore.set(favIds.filter(id => id !== resource.id));
-				} else {
-					favsStore.set([...favIds, resource.id]);
-				}
-			});
 		});
 	});
 </script>
@@ -238,7 +234,7 @@
 						border-bottom: 1px solid var(--dark-300);
 
 						&__text {
-								font-size: var(--font-sm);
+							font-size: var(--font-sm);
 							font-weight: 200;
 							line-height: 0;
 							margin-bottom: 0.5rem;

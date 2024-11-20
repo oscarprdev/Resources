@@ -11,7 +11,7 @@ import Search from '~/icons/search.astro';
 				class="filters__triggers__item__btn"
 				popovertarget="filters"
 				id="filters-btn">
-				Filters
+				<span id="filters-btn-text">Filters</span>
 				<span class="filters__triggers__item__btn__icon--chevron">
 					<Chevron />
 				</span>
@@ -71,6 +71,15 @@ import Search from '~/icons/search.astro';
 			/>
 			<span class="filters__popover__item__text">UI library</span>
 		</label>
+		<label class="filters__popover__item">
+			<input
+				class="filters__popover__item__input"
+				type="checkbox"
+				id="filter-input"
+				name="icons library"
+			/>
+			<span class="filters__popover__item__text">Icons library</span>
+		</label>
 	</div>
 </section>
 
@@ -84,7 +93,7 @@ import Search from '~/icons/search.astro';
 	const searchInput = document.getElementById('search-input');
 
 	const filterInputs = document.querySelectorAll('#filter-input');
-	const btnContent = filtersBtn?.querySelector('span');
+	const btnText = filtersBtn?.querySelector('#filters-btn-text');
 
 	const categories = {
 		[ResourceCategory.Frontend]: false,
@@ -98,7 +107,7 @@ import Search from '~/icons/search.astro';
 	 */
 	filterInputs.forEach(filterInput => {
 		filterInput.addEventListener('change', e => {
-			if (!btnContent) return;
+			if (!btnText) return;
 
 			const target = e.target as HTMLInputElement;
 			const name = target.name;
@@ -111,15 +120,40 @@ import Search from '~/icons/search.astro';
 			) as ResourceCategory[];
 
 			if (categoriesFiltered.length === 0) {
-				btnContent.innerHTML = 'Filters';
+				btnText.innerHTML = 'Filters';
 			} else {
-				btnContent.innerHTML = categoriesFiltered.join(', ');
+				btnText.innerHTML = categoriesFiltered.join(', ');
 			}
 
 			filtersStore.set({
 				...filtersStore.get(),
 				categories: categoriesFiltered,
 			});
+
+			/**
+			 * Disable no checked inputs on 3 checked inputs
+			 */
+			let checkedInputsNames: string[] = [];
+			filterInputs.values().forEach(input => {
+				const inputEl = input as HTMLInputElement;
+				if (inputEl.checked) {
+					checkedInputsNames.push(inputEl.name);
+				}
+			});
+			if (checkedInputsNames.length === 3) {
+				filterInputs.forEach(input => {
+					const inputEl = input as HTMLInputElement;
+					if (checkedInputsNames.includes(inputEl.name)) {
+						inputEl.disabled = false;
+					} else {
+						inputEl.disabled = true;
+					}
+				});
+			} else {
+				filterInputs.forEach(input => {
+					(input as HTMLInputElement).disabled = false;
+				});
+			}
 		});
 	});
 
@@ -203,6 +237,7 @@ import Search from '~/icons/search.astro';
 					padding: 0 1rem;
 					cursor: pointer;
 					font-size: var(--font-sm);
+					text-transform: capitalize;
 
 					&__icon--chevron {
 						transform: rotate(180deg);
@@ -249,12 +284,12 @@ import Search from '~/icons/search.astro';
 			}
 		}
 
-		.filters__popover {
+		&__popover {
 			display: flex;
 			flex-direction: column;
 			padding: 0.5rem;
 
-			label {
+			&__item {
 				display: flex;
 				align-items: center;
 				gap: 0.3rem;
@@ -263,16 +298,20 @@ import Search from '~/icons/search.astro';
 				cursor: pointer;
 				transition: all 0.2s ease;
 
-				span {
+				&__text {
 					font-size: var(--font-xs);
+				}
+
+				&__input:disabled ~ &__text {
+					color: var(--dark-500);
 				}
 			}
 
-			label:hover {
+			&__item:hover {
 				color: var(--dark-400);
 			}
 
-			label:last-of-type {
+			&__item:last-of-type {
 				border-bottom: none;
 			}
 		}

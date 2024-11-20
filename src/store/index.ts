@@ -7,7 +7,6 @@ interface FiltersStore {
 	categories: ResourceCategory[];
 	moreItems: boolean;
 	searchValue: string;
-	showPagination: boolean;
 }
 
 export const NUM_RESOURCES_PER_PAGE = 8;
@@ -17,7 +16,6 @@ export const DEFAULT_FILTERS_STORE: FiltersStore = {
 	categories: [],
 	moreItems: true,
 	searchValue: '',
-	showPagination: true,
 };
 
 export const favsStore = persistentAtom<string[]>('favsStore', [], {

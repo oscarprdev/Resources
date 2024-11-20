@@ -26,30 +26,37 @@ import ArrowRight from '~/icons/arrow-right.astro';
 	const previousBtn = document.getElementById('previous-btn');
 	const nextBtn = document.getElementById('next-btn');
 
+	/*
+	 * Toggle pagination buttons state
+	 */
 	filtersStore.subscribe(state => {
-		const { page, moreItems, showPagination } = state;
+		const { page, moreItems } = state;
 
 		currentPage = page;
 
-		if (!showPagination) {
+		const isFirstPageAndNoMoreItems = currentPage === 0 && !moreItems;
+		const isFirsPageAndMoreItems = currentPage === 0 && moreItems;
+		const isLastPageAndNoMoreItems = currentPage > 0 && !moreItems;
+		const isLastPageAndMoreItems = currentPage > 0 && moreItems;
+
+		if (isFirstPageAndNoMoreItems) {
 			previousBtn?.setAttribute('disabled', 'true');
 			nextBtn?.setAttribute('disabled', 'true');
-			return;
-		}
-
-		if (currentPage === 0) {
+		} else if (isFirsPageAndMoreItems) {
 			previousBtn?.setAttribute('disabled', 'true');
-		} else {
+			nextBtn?.removeAttribute('disabled');
+		} else if (isLastPageAndNoMoreItems) {
 			previousBtn?.removeAttribute('disabled');
-		}
-
-		if (!moreItems) {
 			nextBtn?.setAttribute('disabled', 'true');
-		} else {
+		} else if (isLastPageAndMoreItems) {
+			previousBtn?.removeAttribute('disabled');
 			nextBtn?.removeAttribute('disabled');
 		}
 	});
 
+	/**
+	 * Previous page button event
+	 */
 	previousBtn?.addEventListener('click', () => {
 		const previousPage = currentPage - 1;
 		filtersStore.set({
@@ -58,6 +65,9 @@ import ArrowRight from '~/icons/arrow-right.astro';
 		});
 	});
 
+	/**
+	 * Next page button event
+	 */
 	nextBtn?.addEventListener('click', () => {
 		const nextPage = currentPage + 1;
 		filtersStore.set({ ...filtersStore.get(), page: nextPage });
