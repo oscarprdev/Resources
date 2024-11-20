@@ -48,6 +48,7 @@
 		if (target instanceof HTMLElement) {
 			if (target.id === 'bookmarks-aside') {
 				bookmarksAside?.setAttribute('aria-expanded', 'false');
+				bookmarksTrigger?.classList.toggle('bookmarks__trigger--expanded');
 			}
 		}
 	});
@@ -205,7 +206,8 @@
 					&__clear {
 						cursor: pointer;
 						border: none;
-						padding: 0 1rem 0 3rem;
+						border: 1px solid var(--dark-300);
+						padding: 0.5rem 1rem;
 						background-color: transparent;
 						font-size: var(--font-sm);
 						color: var(--dark-300);
@@ -213,7 +215,8 @@
 					}
 
 					&__clear:hover {
-						color: var(--accent-blue);
+						background-color: var(--accent-blue);
+						color: var(--light-100);
 					}
 				}
 

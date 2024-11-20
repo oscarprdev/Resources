@@ -169,7 +169,7 @@
 
 				padding: 0 1rem;
 				border: 1px solid var(--dark-300);
-
+				transition: all 0.3s ease;
 				text-decoration: none;
 				box-shadow:
 					0 4px 6px -1px rgb(0 0 0 / 0.1),
@@ -188,6 +188,10 @@
 					cursor: pointer;
 					z-index: 10;
 					transition: all 0.2s ease;
+				}
+
+				&__bookmark-btn:hover {
+					color: var(--accent-green);
 				}
 
 				&__content:focus {
@@ -234,7 +238,7 @@
 						border-bottom: 1px solid var(--dark-300);
 
 						&__text {
-							font-size: var(--font-sm);
+								font-size: var(--font-sm);
 							font-weight: 200;
 							line-height: 0;
 							margin-bottom: 0.5rem;
@@ -268,6 +272,10 @@
 				&__content:hover .resource-description span {
 					background-color: var(--dark-500);
 				}
+			}
+
+			.card:hover {
+				background-color: var(--dark-100);
 			}
 
 			.card:nth-child(odd) {

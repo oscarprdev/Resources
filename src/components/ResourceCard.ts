@@ -22,16 +22,29 @@ export const ResourceCard = (resource: Resource) => {
 			class="card__content">
 			<div 
 				class="card__content__section card__content__section--title">
-				${resource.favicon ? `<img class="card__content__section--title__favicon" src="${resource.favicon}" alt="resource favicon"/>` : ''}
-				<h4 class="card__content__section--title__text">${resource.title}</h4>
+				${
+					resource.favicon
+						? `<img 
+							class="card__content__section--title__favicon" 
+							src="${resource.favicon}" 
+							alt="resource favicon"/>`
+						: ''
+				}
+				<h4 class="card__content__section--title__text">
+					${resource.title}
+				</h4>
 			</div>
 			<div 
 				class="card__content__section card__content__section--category">
-				<h5 class="card__content__section--category__text">${resource.categories.map(category => `#${category}`).join(' ')}</h5>
+				<h5 class="card__content__section--category__text">
+					${resource.categories.map(category => `.${category}`).join(' ')}
+				</h5>
 			</div>
 			<div 
 				class="card__content__section card__content__section--description">
-				<p class="card__content__section--description__text">${resource.description}</p>
+				<p class="card__content__section--description__text">
+					${resource.description}
+				</p>
 				<span 
 					style="background-color: ${resource.color}"></span>
 			</div>

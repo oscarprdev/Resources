@@ -15,9 +15,16 @@ export const BookmarkItem = (resource: Resource) => {
             target="_blank"
             class="bookmarks__item__link">
             <div class="bookmarks__item__link__title">
-                <img class="bookmarks__item__link__title--favicon" src="${resource.favicon}" alt="resource favicon"/>
-                <h4 class="bookmarks__item__link__title--text">${resource.title}</h4>
-                <h5 class="bookmarks__item__link__title--categories">${resource.categories.map(category => `.${category}`).join(' ')}</h5>
+                <img 
+                    class="bookmarks__item__link__title--favicon" 
+                    src="${resource.favicon}" 
+                    alt="resource favicon"/>
+                <h4 class="bookmarks__item__link__title--text">
+                    ${resource.title}
+                </h4>
+                <h5 class="bookmarks__item__link__title--categories">
+                    ${resource.categories.map(category => `.${category}`).join(' ')}
+                </h5>
             </div>
             
             <div class="bookmarks__item__link__decorator">
