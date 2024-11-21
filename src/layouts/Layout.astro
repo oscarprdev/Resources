@@ -159,6 +159,20 @@ const { title } = Astro.props;
 		top: 0rem;
 		right: 0rem;
 		pointer-events: none;
+		opacity: 1;
+	}
+
+	.animate {
+		animation: fade-out 0.3s ease-in forwards;
+	}
+
+	@keyframes fade-out {
+		0% {
+			opacity: 1;
+		}
+		100% {
+			opacity: 0;
+		}
 	}
 
 	.card {

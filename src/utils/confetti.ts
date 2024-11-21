@@ -11,15 +11,25 @@ interface ConfettiDot {
 
 const CONFETTI_COLOR = '#6aff97';
 
+function easeOutCubic(t: number): number {
+	return 1.1 - Math.pow(2 - t, 1.3);
+}
+
 export const useConfetti = (resourceCard: HTMLElement, resourceId: string, isGrid: boolean) => {
 	let confetti: ConfettiDot[] = [];
 
 	const canvas = document.getElementById(`confetti-canvas-${resourceId}`) as HTMLCanvasElement;
+	canvas.classList.remove('animate');
+
+	setTimeout(() => {
+		canvas.classList.add('animate');
+	}, 200);
+
 	const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 
 	const rectw = resourceCard?.getBoundingClientRect();
 	const margin = isGrid ? 32 : 20;
-	const speedMultiplier = isGrid ? 0.8 : 0.5;
+	const speedMultiplier = isGrid ? 1.2 : 0.5;
 	const radius = isGrid ? 3 : 2;
 
 	canvas.width = rectw.width;
@@ -54,15 +64,19 @@ export const useConfetti = (resourceCard: HTMLElement, resourceId: string, isGri
 				return;
 			}
 
+			const progress = 1 - dot.opacity; // Invert opacity to use it as progress
+			const easedSpeedX = dot.speedX * easeOutCubic(progress);
+			const easedSpeedY = dot.speedY * easeOutCubic(progress);
+
 			// Draw the dot
 			ctx.beginPath();
-			ctx.arc(dot.x, dot.y, dot.radius, 0, Math.PI * 1.3);
+			ctx.arc(dot.x, dot.y, dot.radius, 0, Math.PI * 1.5);
 			ctx.fillStyle = CONFETTI_COLOR;
 			ctx.fill();
 
 			// Update position and fade-out
-			dot.x += dot.speedX;
-			dot.y += dot.speedY;
+			dot.x += easedSpeedX;
+			dot.y += easedSpeedY;
 			dot.opacity -= dot.decay;
 		});
 
