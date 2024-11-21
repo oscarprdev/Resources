@@ -6,11 +6,17 @@ import Layout from '../layouts/Layout.astro';
 ---
 
 <Layout title="Welcome to Astro.">
-	<main>
+	<main class="home">
 		<Filters />
 		<ResourcesList client:load />
 		<ResourcesPagination client:visible />
 	</main>
-
-	<style></style>
 </Layout>
+
+<style>
+	.home {
+		display: flex;
+		flex-direction: column;
+		height: calc(100% - var(--header-height));
+	}
+</style>

@@ -1,25 +1,26 @@
 import type { Resource } from '~/data';
-import { BookmarkIcon } from './BookmarkIcon';
+import { ResourceBookmarkBtn } from './ResourceBookmarkBtn';
 
 export const ResourceCard = (resource: Resource) => {
 	const resourceItem = document.createElement('article');
 	resourceItem.setAttribute('id', resource.id);
 	resourceItem.classList.add('card');
-	/**
-	 * Bookmark icon
-	 */
-	const bookmarkedIcon = BookmarkIcon(resource.id);
 
-	resourceItem.innerHTML = `
-		<button 
-			class="card__bookmark-btn"
-			id="bookmark-btn-${resource.id}">
-			${bookmarkedIcon}
-		</button>
-		<a  
-			href="${resource.url}" 
-			target="_blank" 
-			class="card__content">
+	/**
+	 * Bookmark button
+	 */
+	const bookmarkBtn = ResourceBookmarkBtn(resource.id);
+	resourceItem.appendChild(bookmarkBtn);
+
+	/**
+	 * Bookmark link
+	 */
+	const bookmarkLink = document.createElement('a');
+	bookmarkLink.href = resource.url;
+	bookmarkLink.target = '_blank';
+	bookmarkLink.classList.add('card__content');
+
+	bookmarkLink.innerHTML = `
 			<div 
 				class="card__content__section card__content__section--title">
 				${
@@ -48,8 +49,9 @@ export const ResourceCard = (resource: Resource) => {
 				<span 
 					style="background-color: ${resource.color}"></span>
 			</div>
-		</a>
 	`;
+
+	resourceItem.appendChild(bookmarkLink);
 
 	return resourceItem;
 };

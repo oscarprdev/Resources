@@ -1,33 +1,46 @@
+---
+import LayoutList from '~/icons/layout-list.astro';
+---
+
 <section class="resources">
 	<div
-		class="resources__count"
-		id="resources-count">
+		class="resources__header"
+		id="resources-header">
 		<h3
-			class="resources__count__text"
-			id="resources-count-text">
+			class="resources__header__count"
+			id="resources-header-count">
 		</h3>
+		<button
+			id="resources-header-btn"
+			class="resources__header__btn">
+			<span class="resources__header__btn__icon">
+				<LayoutList />
+			</span>
+		</button>
 	</div>
 	<div
 		id="resources-list"
-		class="resources__list">
+		class="resources__list resources__list--grid">
 	</div>
 </section>
 
 <script>
 	import { BookmarkIcon } from '~/components/BookmarkIcon';
 	import { ResourceCard } from '~/components/ResourceCard';
+	import { ResourceCardThin } from '~/components/ResourceCardThin';
 	import { resources, type Resource } from '~/data';
-	import { favsStore, filtersStore, NUM_RESOURCES_PER_PAGE } from '../store/index';
+	import { favsStore, filtersStore } from '../store/index';
 
-	const resourcesCount = document.getElementById('resources-count');
-	const resourcesCountText = document.getElementById('resources-count-text');
+	const resourcesCount = document.getElementById('resources-header');
+	const resourcesCountText = document.getElementById('resources-header-count');
 	const resourcesList = document.getElementById('resources-list');
+	const resourcesHeaderBtn = document.getElementById('resources-header-btn');
 
 	let resourcesRendered: Resource[] = [];
 
 	filtersStore.subscribe(state => {
 		if (!resourcesList || !resourcesCount || !resourcesCountText) return;
-		const { categories, page, moreItems, searchValue } = state;
+		const { categories, page, moreItems, searchValue, layout } = state;
 
 		resourcesList.innerHTML = '';
 
@@ -50,20 +63,23 @@
 			});
 		}
 
+		const NUM_RESOURCES_PER_PAGE = layout === 'grid' ? 8 : 24;
+
 		const resourcesResult = resourcesFiltered.slice(page * NUM_RESOURCES_PER_PAGE, (page + 1) * NUM_RESOURCES_PER_PAGE);
 		resourcesRendered = resourcesResult;
 
 		/**
 		 * Resources results counter
 		 */
-		resourcesCount.classList.remove('resources__count--empty');
+		resourcesCount.classList.remove('resources__header--empty');
 		resourcesCountText.textContent = `${resourcesFiltered.length} results`;
 
 		/**
 		 * Render resources cards
 		 */
 		resourcesResult.forEach(resource => {
-			const resourceCard = ResourceCard(resource);
+			console.log(layout);
+			const resourceCard = layout === 'grid' ? ResourceCard(resource) : ResourceCardThin(resource);
 			resourcesList.appendChild(resourceCard);
 
 			/**
@@ -86,7 +102,7 @@
 		 * No results found
 		 */
 		if (resourcesRendered.length === 0) {
-			resourcesCount.classList.add('resources__count--empty');
+			resourcesCount.classList.add('resources__header--empty');
 			resourcesCountText.textContent = `
 				No results found
 			`;
@@ -115,6 +131,11 @@
 			bookmarkBtn.innerHTML = bookmarkIcon;
 		});
 	});
+
+	resourcesHeaderBtn?.addEventListener('click', () => {
+		resourcesList?.classList.toggle('resources__list--grid');
+		filtersStore.set({ ...filtersStore.get(), layout: resourcesList?.className.includes('grid') ? 'grid' : 'list' });
+	});
 </script>
 
 <style lang="scss" is:global>
@@ -125,26 +146,50 @@
 
 	.resources {
 		width: 100%;
-		margin-top: -30px;
 		position: relative;
 
-		&__count {
-			margin-left: 3rem;
+		&__header {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			width: 100%;
+			padding: 0 3rem;
+			margin-top: -20px;
+			margin-bottom: 10px;
+			box-sizing: border-box;
 
-			&__text {
+			&__count {
 				font-weight: 100;
 				font-size: var(--font-md);
+				line-height: 0;
+			}
+
+			&__btn {
+				display: grid;
+				place-items: center;
+				border: none;
+				background-color: transparent;
+				cursor: pointer;
+
+				&__icon {
+					width: 1.2rem;
+					color: var(--dark-400);
+					transition: all 0.3s ease;
+				}
+			}
+
+			&__btn:hover &__btn__icon {
+				color: var(--dark-100);
 			}
 
 			&--empty {
 				height: 50dvh;
-				width: 100%;
 				display: grid;
 				place-items: center;
 				margin-left: -1.5rem;
 			}
 
-			&--empty &__text {
+			&--empty &__count {
 				margin-left: 0;
 				margin-top: -2rem;
 			}
@@ -153,125 +198,13 @@
 		&__list {
 			display: grid;
 			grid-template-columns: repeat(auto-fill, minmax(20vw, 1fr));
+			gap: 0.5rem;
 			width: 100%;
 			box-sizing: border-box;
 			padding: 0 3rem;
-			gap: 1.5rem;
 
-			.card {
-				height: 200px;
-				position: relative;
-				background-color: var(--dark-200);
-
-				padding: 0 1rem;
-				border: 1px solid var(--dark-300);
-				transition: all 0.3s ease;
-				text-decoration: none;
-				box-shadow:
-					0 4px 6px -1px rgb(0 0 0 / 0.1),
-					0 2px 4px -2px rgb(0 0 0 / 0.1);
-
-				&__bookmark-btn {
-					position: absolute;
-					top: 1rem;
-					right: 1rem;
-					padding: 0.3rem;
-					display: grid;
-					place-items: center;
-					border: none;
-					background-color: transparent;
-					color: var(--light-200);
-					cursor: pointer;
-					z-index: 10;
-					transition: all 0.2s ease;
-				}
-
-				&__bookmark-btn:hover {
-					color: var(--accent-green);
-				}
-
-				&__content:focus {
-					outline: 3px solid var(--accent-blue);
-				}
-
-				&__content {
-					display: flex;
-					flex-direction: column;
-					color: var(--light-300);
-					height: 100%;
-					border-left: 1px solid var(--dark-300);
-					border-right: 1px solid var(--dark-300);
-
-					&__section {
-						position: absolute;
-						left: 0;
-						box-sizing: border-box;
-						padding-left: 2rem;
-						width: 100%;
-						border-bottom: 1px solid var(--dark-300);
-					}
-
-					&__section--title {
-						display: flex;
-						align-items: center;
-						gap: 0.5rem;
-						top: 1rem;
-						border-top: 1px solid var(--dark-300);
-
-						&__favicon {
-							width: 1.5rem;
-						}
-
-						&__text {
-							font-size: var(--font-3xl);
-							font-style: italic;
-							line-height: 0;
-						}
-					}
-
-					&__section--category {
-						top: 6rem;
-						border-bottom: 1px solid var(--dark-300);
-
-						&__text {
-							font-size: var(--font-sm);
-							font-weight: 200;
-							line-height: 0;
-							margin-bottom: 0.5rem;
-						}
-					}
-
-					&__section--description {
-						bottom: 1rem;
-						padding-right: 1rem;
-						border-top: 1px solid var(--dark-300);
-						display: flex;
-						align-items: start;
-						justify-content: space-between;
-						height: 5rem;
-
-						&__text {
-							font-size: var(--font-xs);
-							font-weight: 200;
-							width: 90%;
-							text-wrap: pretty;
-						}
-
-						span {
-							width: 2rem;
-							height: 100%;
-							transition: all 0.2s ease-in-out;
-						}
-					}
-				}
-
-				&__content:hover .resource-description span {
-					background-color: var(--dark-500);
-				}
-			}
-
-			.card:hover {
-				background-color: var(--dark-100);
+			&__content:hover .resource-description span {
+				background-color: var(--dark-500);
 			}
 
 			.card:nth-child(odd) {
@@ -293,6 +226,12 @@
 				height: var(--card-height);
 			}
 		}
+
+		&__list--grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(20vw, 1fr));
+			gap: 1.5rem;
+		}
 	}
 
 	.resources::before {
@@ -306,11 +245,12 @@
 		z-index: -1;
 	}
 
-	@media (max-width: 1100px) {
+	@media (max-width: 1200px) {
 		.resources {
-			&__count {
-				margin-left: 1rem;
-				margin-top: 2rem;
+			&__header {
+				padding: 0 1rem;
+				margin-top: -5px;
+				margin-bottom: 0px;
 			}
 
 			&__list {
@@ -327,8 +267,8 @@
 
 	@media (max-width: 750px) {
 		.resources {
-			&__count {
-				&__title {
+			&__header {
+				&__count {
 					font-size: var(--font-sm);
 				}
 			}
