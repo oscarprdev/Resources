@@ -158,6 +158,9 @@ import Bookmark from '~/icons/bookmark.astro';
 
 <style lang="scss" is:global>
 	.bookmarks {
+		position: absolute;
+		right: 3rem;
+
 		&__trigger {
 			position: relative;
 			border: none;
@@ -277,6 +280,12 @@ import Bookmark from '~/icons/bookmark.astro';
 
 		&__aside[aria-expanded='true'] &__aside__content {
 			right: 0;
+		}
+	}
+
+	@media (max-width: 1100px) {
+		.bookmarks {
+			right: 1rem;
 		}
 	}
 </style>
