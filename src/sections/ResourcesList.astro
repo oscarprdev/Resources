@@ -22,6 +22,7 @@ import LayoutList from '~/icons/layout-list.astro';
 		id="resources-list"
 		class="resources__list resources__list--grid">
 	</div>
+	<canvas id="canvas"></canvas>
 </section>
 
 <script>
@@ -29,6 +30,7 @@ import LayoutList from '~/icons/layout-list.astro';
 	import { ResourceCard } from '~/components/ResourceCard';
 	import { ResourceCardThin } from '~/components/ResourceCardThin';
 	import { resources, type Resource } from '~/data';
+	import { useConfetti } from '~/utils/confetti';
 	import { favsStore, filtersStore } from '../store/index';
 
 	const resourcesCount = document.getElementById('resources-header');
@@ -85,12 +87,17 @@ import LayoutList from '~/icons/layout-list.astro';
 			const resourceCard = layout === 'grid' ? ResourceCard(resource) : ResourceCardThin(resource);
 			resourcesList.appendChild(resourceCard);
 
+			const confettiCanvas = document.createElement('canvas');
+			confettiCanvas.id = `confetti-canvas-${resource.id}`;
+			confettiCanvas.classList.add('confetti-canvas');
+			resourceCard.appendChild(confettiCanvas);
+
 			/**
 			 * Bookmark button event
 			 */
 			const bookmarkBtn = document.getElementById(`bookmark-btn-${resource.id}`);
 
-			bookmarkBtn?.addEventListener('click', () => {
+			bookmarkBtn?.addEventListener('click', e => {
 				const isBookmarked = favsStore.get().includes(resource.id);
 
 				if (isBookmarked) {
@@ -98,6 +105,8 @@ import LayoutList from '~/icons/layout-list.astro';
 				} else {
 					favsStore.set([...favsStore.get(), resource.id]);
 				}
+
+				useConfetti(resourceCard, resource.id, layout === 'grid');
 			});
 		});
 
