@@ -1,5 +1,4 @@
 import type { Resource } from '~/data';
-import { BookmarkIcon } from './BookmarkIcon';
 import { ResourceBookmarkBtn } from './ResourceBookmarkBtn';
 
 export const ResourceCardThin = (resource: Resource, isBookmark?: boolean) => {
