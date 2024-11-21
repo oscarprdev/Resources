@@ -371,4 +371,18 @@ const { title } = Astro.props;
 	.resource-remove-btn:hover div {
 		transform: rotate(180deg);
 	}
+
+	@media (max-width: 850px) {
+		.card {
+			&__content {
+				&__section {
+					&--title {
+						&__text {
+							font-size: var(--font-lg);
+						}
+					}
+				}
+			}
+		}
+	}
 </style>
