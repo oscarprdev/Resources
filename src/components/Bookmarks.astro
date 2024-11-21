@@ -1,9 +1,13 @@
+---
+import Bookmark from '~/icons/bookmark.astro';
+---
+
 <div class="bookmarks">
 	<button
 		id="bookmarks-trigger"
-		class="bookmarks__trigger"
-		>Bookmarks</button
-	>
+		class="bookmarks__trigger">
+		<Bookmark />
+	</button>
 	<aside
 		aria-expanded="false"
 		id="bookmarks-aside"
@@ -88,7 +92,25 @@
 		/**
 		 * Bookmarks counter
 		 */
-		bookmarksTrigger.textContent = `Bookmarks${favIds.length > 0 ? ` (${favIds.length})` : ''}`;
+
+		if (favIds.length > 0) {
+			const bookmarksCount = document.getElementById('bookmarks-count');
+			const text = `${favIds.length}`;
+
+			if (!bookmarksCount) {
+				const bookmarksCount = document.createElement('span');
+				bookmarksCount.setAttribute('id', 'bookmarks-count');
+				bookmarksCount.classList.add('bookmarks__trigger__count');
+				bookmarksCount.textContent = text;
+
+				bookmarksTrigger.appendChild(bookmarksCount);
+			} else {
+				bookmarksCount.textContent = text;
+			}
+		} else {
+			const bookmarksCount = document.getElementById('bookmarks-count');
+			bookmarksCount?.remove();
+		}
 
 		const resourcesBookmarked = resources.filter(resource => favIds.includes(resource.id));
 		bookmarksContainer.innerHTML = '';
@@ -137,6 +159,7 @@
 <style lang="scss" is:global>
 	.bookmarks {
 		&__trigger {
+			position: relative;
 			border: none;
 			background-color: transparent;
 			color: var(--light-100);
@@ -146,6 +169,21 @@
 
 			&--expanded {
 				color: var(--accent-blue-light);
+			}
+
+			&__count {
+				position: absolute;
+				width: 1rem;
+				height: 1rem;
+				display: grid;
+				place-items: center;
+				top: -0.2rem;
+				right: 0rem;
+				background-color: var(--accent-green);
+				border-radius: 100%;
+				color: var(--dark-100);
+				font-weight: bold;
+				font-size: var(--font-xs);
 			}
 		}
 
