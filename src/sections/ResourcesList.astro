@@ -63,9 +63,13 @@ import LayoutList from '~/icons/layout-list.astro';
 			});
 		}
 
-		const NUM_RESOURCES_PER_PAGE = layout === 'grid' ? 8 : 24;
+		const NUM_RESOURCES_PER_PAGE = layout === 'grid' ? 12 : 24;
 
 		const resourcesResult = resourcesFiltered.slice(page * NUM_RESOURCES_PER_PAGE, (page + 1) * NUM_RESOURCES_PER_PAGE);
+		if (resourcesResult.length === 0 && page > 0) {
+			filtersStore.set({ ...filtersStore.value, page: 0 });
+			return;
+		}
 		resourcesRendered = resourcesResult;
 
 		/**
@@ -78,7 +82,6 @@ import LayoutList from '~/icons/layout-list.astro';
 		 * Render resources cards
 		 */
 		resourcesResult.forEach(resource => {
-			console.log(layout);
 			const resourceCard = layout === 'grid' ? ResourceCard(resource) : ResourceCardThin(resource);
 			resourcesList.appendChild(resourceCard);
 
@@ -134,7 +137,7 @@ import LayoutList from '~/icons/layout-list.astro';
 
 	resourcesHeaderBtn?.addEventListener('click', () => {
 		resourcesList?.classList.toggle('resources__list--grid');
-		filtersStore.set({ ...filtersStore.get(), layout: resourcesList?.className.includes('grid') ? 'grid' : 'list' });
+		filtersStore.set({ ...filtersStore.value, layout: resourcesList?.className.includes('grid') ? 'grid' : 'list' });
 	});
 </script>
 
@@ -183,15 +186,17 @@ import LayoutList from '~/icons/layout-list.astro';
 			}
 
 			&--empty {
-				height: 50dvh;
+				width: 100%;
 				display: grid;
 				place-items: center;
-				margin-left: -1.5rem;
 			}
 
 			&--empty &__count {
 				margin-left: 0;
-				margin-top: -2rem;
+			}
+
+			&--empty &__btn__icon {
+				display: none;
 			}
 		}
 
@@ -216,13 +221,15 @@ import LayoutList from '~/icons/layout-list.astro';
 			}
 
 			.card:nth-child(5),
-			.card:nth-child(7) {
+			.card:nth-child(7),
+			.card:nth-child(9),
+			.card:nth-child(11) {
 				margin-top: -50px;
 				height: var(--card-height-large);
 			}
 
-			.card:nth-child(6),
-			.card:nth-child(8) {
+			.card:nth-child(10),
+			.card:nth-child(12) {
 				height: var(--card-height);
 			}
 		}
@@ -284,6 +291,7 @@ import LayoutList from '~/icons/layout-list.astro';
 		.resources {
 			&__list {
 				grid-template-columns: repeat(auto-fill, minmax(90vw, 1fr));
+				gap: 0.5rem;
 			}
 		}
 	}
