@@ -6,12 +6,12 @@ import Search from '~/icons/search.astro';
 <section class="filters">
 	<div class="filters__triggers">
 		<label class="filters__triggers__item">
-			<span class="filters__triggers__item__title">Filters</span>
+			<span class="filters__triggers__item__title">Categories</span>
 			<button
 				class="filters__triggers__item__btn"
 				popovertarget="filters"
 				id="filters-btn">
-				<span id="filters-btn-text">Filters</span>
+				<span id="filters-btn-text">Categories</span>
 				<span class="filters__triggers__item__btn__icon--chevron">
 					<Chevron />
 				</span>
@@ -60,7 +60,7 @@ import Search from '~/icons/search.astro';
 				id="filter-input"
 				name="framework"
 			/>
-			<span class="filters__popover__item__text">Framework</span>
+			<span class="filters__popover__item__text">Frameworks</span>
 		</label>
 		<label class="filters__popover__item">
 			<input
@@ -69,7 +69,7 @@ import Search from '~/icons/search.astro';
 				id="filter-input"
 				name="ui library"
 			/>
-			<span class="filters__popover__item__text">UI library</span>
+			<span class="filters__popover__item__text">UI libraries</span>
 		</label>
 		<label class="filters__popover__item">
 			<input
@@ -78,7 +78,61 @@ import Search from '~/icons/search.astro';
 				id="filter-input"
 				name="icons library"
 			/>
-			<span class="filters__popover__item__text">Icons library</span>
+			<span class="filters__popover__item__text">Icons libraries</span>
+		</label>
+		<label class="filters__popover__item">
+			<input
+				class="filters__popover__item__input"
+				type="checkbox"
+				id="filter-input"
+				name="infrastructure"
+			/>
+			<span class="filters__popover__item__text">Infrastructure</span>
+		</label>
+		<label class="filters__popover__item">
+			<input
+				class="filters__popover__item__input"
+				type="checkbox"
+				id="filter-input"
+				name="database"
+			/>
+			<span class="filters__popover__item__text">Databases</span>
+		</label>
+		<label class="filters__popover__item">
+			<input
+				class="filters__popover__item__input"
+				type="checkbox"
+				id="filter-input"
+				name="utilities"
+			/>
+			<span class="filters__popover__item__text">Utilities</span>
+		</label>
+		<label class="filters__popover__item">
+			<input
+				class="filters__popover__item__input"
+				type="checkbox"
+				id="filter-input"
+				name="accessibility"
+			/>
+			<span class="filters__popover__item__text">Accessibility</span>
+		</label>
+		<label class="filters__popover__item">
+			<input
+				class="filters__popover__item__input"
+				type="checkbox"
+				id="filter-input"
+				name="repositories"
+			/>
+			<span class="filters__popover__item__text">Repositories</span>
+		</label>
+		<label class="filters__popover__item">
+			<input
+				class="filters__popover__item__input"
+				type="checkbox"
+				id="filter-input"
+				name="blogs"
+			/>
+			<span class="filters__popover__item__text">Blogs</span>
 		</label>
 	</div>
 </section>
@@ -220,6 +274,8 @@ import Search from '~/icons/search.astro';
 					box-sizing: border-box;
 					transition: all 0.3s ease;
 					height: 2.5rem;
+					color: var(--dark-400);
+					font-size: var(--font-sm);
 				}
 
 				&__input {
@@ -236,7 +292,6 @@ import Search from '~/icons/search.astro';
 					justify-content: space-between;
 					padding: 0 1rem;
 					cursor: pointer;
-					font-size: var(--font-sm);
 					text-transform: capitalize;
 
 					&__icon--chevron {
@@ -249,6 +304,10 @@ import Search from '~/icons/search.astro';
 
 				&__btn:focus {
 					outline-color: var(--dark-300);
+				}
+
+				&__btn:hover {
+					color: var(--dark-200);
 				}
 
 				&__btn::before {
