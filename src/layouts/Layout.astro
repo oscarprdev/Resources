@@ -166,20 +166,10 @@ const { title } = Astro.props;
 		animation: fade-out 0.3s ease-in forwards;
 	}
 
-	@keyframes fade-out {
-		0% {
-			opacity: 1;
-		}
-		100% {
-			opacity: 0;
-		}
-	}
-
 	.card {
 		height: 200px;
 		position: relative;
 		background-color: var(--dark-200);
-
 		padding: 0 1rem;
 		border: 1px solid var(--dark-300);
 		transition: all 0.3s ease;
@@ -406,6 +396,15 @@ const { title } = Astro.props;
 					}
 				}
 			}
+		}
+	}
+
+	@keyframes fade-out {
+		0% {
+			opacity: 1;
+		}
+		100% {
+			opacity: 0;
 		}
 	}
 </style>
