@@ -3,7 +3,7 @@ import { ResourceBookmarkBtn } from './ResourceBookmarkBtn';
 
 export const ResourceCardThin = (resource: Resource, isBookmark?: boolean) => {
 	const bookmarkListItem = document.createElement('li');
-	bookmarkListItem.setAttribute('id', resource.id);
+	bookmarkListItem.setAttribute('id', `bookmark-${resource.id}`);
 	bookmarkListItem.classList.add('card__thin');
 
 	/**

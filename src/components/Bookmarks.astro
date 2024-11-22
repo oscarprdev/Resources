@@ -138,9 +138,14 @@ import Bookmark from '~/icons/bookmark.astro';
 			 */
 			resourcesBookmarked.forEach(resource => {
 				const deleteBookmarkBtn = document.getElementById(`remove-bookmark-${resource.id}`);
+				const bookmarkCard = document.getElementById(`bookmark-${resource.id}`);
 
 				deleteBookmarkBtn?.addEventListener('click', () => {
-					favsStore.set(favIds.filter(id => id !== resource.id));
+					bookmarkCard?.classList.add('card__thin--hidden');
+
+					setTimeout(() => {
+						favsStore.set(favIds.filter(id => id !== resource.id));
+					}, 200);
 				});
 			});
 		} else {
