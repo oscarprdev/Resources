@@ -647,6 +647,16 @@ export const resources: Resource[] = [
 		favicon: 'https://tanstack.com/favicon-32x32.png',
 	},
 	{
+		id: 'valibot',
+		title: 'Valibot',
+		description:
+			'Valibot is the open source schema library for TypeScript with bundle size, type safety and developer experience in mind.',
+		url: 'https://valibot.dev/',
+		categories: [ResourceCategory.Frontend, ResourceCategory.Backend, ResourceCategory.Utilities],
+		color: '#38BDF9',
+		favicon: 'https://valibot.dev/icon-32px.png',
+	},
+	{
 		id: 'vecta',
 		title: 'Vecta',
 		description: "World's Best SVG Compressor.",
