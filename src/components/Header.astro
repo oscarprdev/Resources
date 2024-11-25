@@ -4,83 +4,95 @@ import Bookmarks from './Bookmarks.astro';
 ---
 
 <header class="header">
-	<h1 class="header__title">Resources</h1>
-	<div class="header__message">
-		<a
-			href="https://github.com/oscarprdev/resources"
-			target="_blank"
-			class="header__message__content">
-			<p>Feel free to contribute adding your favourites resources!</p>
+	<div class="header__content">
+		<h1 class="header__content__title">Resources</h1>
+		<div class="header__content__message">
+			<a
+				href="https://github.com/oscarprdev/resources"
+				target="_blank"
+				class="header__message__content">
+				<p>Feel free to contribute adding your favourites resources!</p>
 
-			<span>
-				<ArrowUp />
-			</span>
-		</a>
+				<span>
+					<ArrowUp />
+				</span>
+			</a>
+		</div>
 	</div>
+
 	<Bookmarks />
 </header>
 
 <style lang="scss" is:global>
 	.header {
-		position: sticky;
+		position: absolute;
 		top: 0;
-		display: grid;
-		place-items: center;
-		padding-left: 3rem;
-		padding-right: 3rem;
-		background-color: var(--dark-100);
-		height: var(--header-height);
-		border-bottom: 1px solid var(--dark-200);
-
+		overflow: hidden;
+		width: 100vw;
+		height: 100vh;
 		z-index: 100;
-		box-sizing: border-box;
 
-		&__title {
-			font-size: var(--font-4xl);
-			margin-right: auto;
-			line-height: 0;
-			color: var(--light-100);
-		}
+		&__content {
+			position: sticky;
+			top: 0;
+			padding-left: 3rem;
+			padding-right: 3rem;
+			box-sizing: border-box;
+			background-color: var(--dark-100);
+			border-bottom: 1px solid var(--dark-200);
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			width: 100vw;
+			height: var(--header-height);
 
-		&__message {
-			position: absolute;
-			display: grid;
-			place-items: center;
-			width: fit-content;
-			padding: 0.1rem;
-			height: 2rem;
-			animation: gradient 8s ease infinite;
-			background: linear-gradient(-45deg, #ff00ff, #00ffff, #0000ff);
-			background-size: 400% 400%;
-
-			&__content {
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				gap: 0.3rem;
-				background-color: var(--dark-100);
-				width: 100%;
-				height: 100%;
-				padding: 0 1rem;
-				color: var(--light-500);
-				box-sizing: border-box;
-				transition: all 0.2s ease;
-				text-decoration: none;
-
-				p {
-					font-size: var(--font-xs);
-					line-height: 0;
-				}
-
-				span {
-					display: grid;
-					place-items: center;
-					width: 1rem;
-				}
+			&__title {
+				font-size: var(--font-4xl);
+				margin-right: auto;
+				line-height: 0;
+				color: var(--light-100);
 			}
 
-			&__content:hover {
-				color: var(--light-100);
+			&__message {
+				position: absolute;
+				display: grid;
+				place-items: center;
+				width: fit-content;
+				padding: 0.1rem;
+				height: 2rem;
+				animation: gradient 8s ease infinite;
+				background: linear-gradient(-45deg, #ff00ff, #00ffff, #0000ff);
+				background-size: 400% 400%;
+
+				&__content {
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					gap: 0.3rem;
+					background-color: var(--dark-100);
+					width: 100%;
+					height: 100%;
+					padding: 0 1rem;
+					color: var(--light-500);
+					box-sizing: border-box;
+					transition: all 0.2s ease;
+					text-decoration: none;
+
+					p {
+						font-size: var(--font-xs);
+						line-height: 0;
+					}
+
+					span {
+						display: grid;
+						place-items: center;
+						width: 1rem;
+					}
+				}
+
+				&__content:hover {
+					color: var(--light-100);
+				}
 			}
 		}
 	}
@@ -99,23 +111,29 @@ import Bookmarks from './Bookmarks.astro';
 
 	@media (max-width: 1100px) {
 		.header {
-			padding-left: 1rem;
-			padding-right: 1rem;
+			&__content {
+				padding-left: 1rem;
+				padding-right: 1rem;
+			}
 		}
 	}
 
 	@media (max-width: 750px) {
 		.header {
-			&__message {
-				left: 15rem;
+			&__content {
+				&__message {
+					left: 15rem;
+				}
 			}
 		}
 	}
 
 	@media (max-width: 650px) {
 		.header {
-			&__message {
-				display: none;
+			&__content {
+				&__message {
+					display: none;
+				}
 			}
 		}
 	}
