@@ -1,6 +1,6 @@
 ---
 import ArrowUp from '~/icons/arrow-up.astro';
-import Bookmarks from './Bookmarks.astro';
+import Bookmark from '~/icons/bookmark.astro';
 ---
 
 <header class="header">
@@ -10,7 +10,7 @@ import Bookmarks from './Bookmarks.astro';
 			<a
 				href="https://github.com/oscarprdev/resources"
 				target="_blank"
-				class="header__message__content">
+				class="header__content__message__content">
 				<p>Feel free to contribute adding your favourites resources!</p>
 
 				<span>
@@ -19,17 +19,19 @@ import Bookmarks from './Bookmarks.astro';
 			</a>
 		</div>
 	</div>
-
-	<Bookmarks />
+	<button
+		id="bookmarks-trigger"
+		class="bookmarks__trigger">
+		<Bookmark />
+	</button>
 </header>
 
 <style lang="scss" is:global>
 	.header {
-		position: absolute;
+		position: sticky;
 		top: 0;
 		overflow: hidden;
 		width: 100vw;
-		height: 100vh;
 		z-index: 100;
 
 		&__content {
@@ -40,9 +42,8 @@ import Bookmarks from './Bookmarks.astro';
 			box-sizing: border-box;
 			background-color: var(--dark-100);
 			border-bottom: 1px solid var(--dark-200);
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
+			display: grid;
+			place-items: center;
 			width: 100vw;
 			height: var(--header-height);
 

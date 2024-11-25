@@ -1,4 +1,5 @@
 ---
+import Bookmarks from '~/components/Bookmarks.astro';
 import Filters from '~/sections/Filters.astro';
 import ResourcesList from '~/sections/ResourcesList.astro';
 import ResourcesPagination from '~/sections/ResourcesPagination.astro';
@@ -11,13 +12,13 @@ import Layout from '../layouts/Layout.astro';
 		<ResourcesList />
 		<ResourcesPagination />
 	</main>
+	<Bookmarks />
 </Layout>
 
 <style>
 	.home {
 		display: flex;
 		flex-direction: column;
-		margin-top: var(--header-height);
 		height: calc(100% - var(--header-height));
 	}
 </style>
