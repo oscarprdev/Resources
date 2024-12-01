@@ -647,6 +647,16 @@ export const resources: Resource[] = [
 		favicon: 'https://tanstack.com/favicon-32x32.png',
 	},
 	{
+		id: 'uvcanvas',
+		title: 'UV Canvas',
+		description:
+			'An open source React.js component library for beautifully shaded canvas, brought to you by Latent Cat.',
+		url: 'https://uvcanvas.com/',
+		categories: [ResourceCategory.Frontend, ResourceCategory.Utilities],
+		color: '#D4E892',
+		favicon: 'https://uvcanvas.com/favicon-32x32.png',
+	},
+	{
 		id: 'valibot',
 		title: 'Valibot',
 		description:
