@@ -189,6 +189,16 @@ export const resources: Resource[] = [
 		favicon: 'https://pub-6ef5eeb2db894dbd97c3bff93516d870.r2.dev/deno.svg',
 	},
 	{
+		id: 'effect',
+		title: 'Effect-ts',
+		description:
+			'The best way to build robust appsbuild robust apps in TypeScript.',
+		url: 'https://effect.website/',
+		categories: [ResourceCategory.Frontend, ResourceCategory.Backend, ResourceCategory.Utilities],
+		color: '#5E25DD',
+		favicon: 'https://effect.website/icon.png?dc1624f3c72c6599',
+	},
+	{
 		id: 'excalidraw',
 		title: 'Excalidraw',
 		description:
